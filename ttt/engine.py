@@ -52,10 +52,8 @@ class Engine(object):
 def check(board):
     """Simple routine for checking if somebody has won"""
     for x in xrange(3):
-        if abs(sum(board[(x, y)] for y in xrange(3))) == 3:
-            raise Victory
-    for y in xrange(3):
-        if abs(sum(board[(x, y)] for x in xrange(3))) == 3:
+        if (abs(sum(board[(x, y)] for y in xrange(3))) == 3 or
+            abs(sum(board[(y, x)] for y in xrange(3))) == 3):
             raise Victory
     # Now, check the diagonals
     if (abs(sum(board[(x, x)] for x in xrange(3))) == 3 or

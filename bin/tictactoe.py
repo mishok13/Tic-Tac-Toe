@@ -11,12 +11,31 @@ import traceback
 from ttt import engine
 
 
+def pretty_print(board):
+    view = {engine.CROSS: 'X', engine.DRAUGHT: 'O', engine.EMPTY: ' '}
+    for y in xrange(3):
+        print ' | '.join(map(str, (view[board[(x, y)]] for x in xrange(3))))
+        if y != 2:
+            print '-' * 9
+
+
 def process(args):
     try:
         eng = engine.Engine()
         while True:
-            eng.move()
-            print eng.board
+            try:
+                eng.move()
+                pretty_print(eng.board)
+                print
+            except engine.Victory:
+                pretty_print(eng.board)
+                print 'Victory for %s' % {-1: 'crosses',
+                                          1: 'draughts'}[eng.current_mark]
+                break
+            except engine.Draw:
+                pretty_print(eng.board)
+                print 'Draw'
+                break
     except Exception:
         traceback.print_exc()
         return 2
