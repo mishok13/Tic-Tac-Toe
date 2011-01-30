@@ -8,6 +8,10 @@ class Victory(Exception):
     pass
 
 
+class Draw(Exception):
+    pass
+
+
 class Engine(object):
 
     values = {'X': 1, 'O': -1}
@@ -17,8 +21,14 @@ class Engine(object):
 
     def move(self):
         """Make AI move"""
-        coord = None
-        self.mark(coord, 'X')
+        # We're assuming that if everything's right, then
+        # sum of
+        if sum(self.board.values) == 1:
+            value = 'O'
+        else:
+            value = 'X'
+        value, coord = None, None
+        self.mark(coord, value)
 
     def mark(self, coord, value):
         """Mark the coord and check for the winning position"""
@@ -37,3 +47,5 @@ class Engine(object):
         if (abs(sum(self.board[(x, x)] for x in xrange(3))) == 3 or
             abs(sum(self.board[(x, 2 - x)] for x in xrange(3))) == 3):
             raise Victory
+        if None not in self.board.values():
+            raise Draw
