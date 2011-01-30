@@ -23,7 +23,7 @@ class Engine(object):
         """Make AI move"""
         # We're assuming that if everything's right, then
         # sum of
-        if sum(self.board.values) == 1:
+        if sum(self.board.itervalues()) == 1:
             value = 'O'
         else:
             value = 'X'
