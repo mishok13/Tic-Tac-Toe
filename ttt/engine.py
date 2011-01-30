@@ -5,6 +5,7 @@
 
 
 import random
+from itertools import combinations
 
 
 class Victory(Exception):
@@ -57,6 +58,13 @@ def bruteforce(board):
             return (coord for coord, value in line.iteritems()
                     if value == EMPTY).next()
     # TODO: fork
+    possible_forks = []
+    for line in columns_and_diagonals(board):
+        if sum(value == EMPTY for value in board.itervalues()) == 2:
+            possible_forks.append(line)
+    print possible_forks
+    for combination in combinations(possible_forks, 2):
+        print combination
     # Play center
     if board[(1, 1)] == EMPTY:
         return (1, 1)
