@@ -42,13 +42,12 @@ class Engine(object):
     def move(self):
         """Random AI, what could be better?"""
         self.mark(random.choice([coord for coord, value in self.board.iteritems()
-                                 if value == EMPTY])
+                                 if value == EMPTY]))
 
     def mark(self, coord):
         """Mark the coord and check for the winning position"""
         self.board[coord] = self.current_mark
         check(self.board)
-
 
 def check(board):
     """Simple routine for checking if somebody has won"""
