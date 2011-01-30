@@ -21,19 +21,20 @@ def pretty_print(board):
 
 def process(args):
     try:
-        eng = engine.Engine()
+        board = engine.empty_board()
         while True:
             try:
-                eng.move()
-                pretty_print(eng.board)
+                coord = engine.bruteforce(board)
+                # coord = engine.random_move(board)
+                board[coord] = engine.next_mark(board)
+                pretty_print(board)
                 print
+                engine.check(board)
             except engine.Victory:
-                pretty_print(eng.board)
-                print 'Victory for %s' % {-1: 'crosses',
-                                          1: 'draughts'}[eng.current_mark]
+                winner = {engine.CROSS: 'crosses', engine.DRAUGHT: 'draughts'}[engine.current_mark(board)]
+                print 'Victory for %s' % winner
                 break
             except engine.Draw:
-                pretty_print(eng.board)
                 print 'Draw'
                 break
     except Exception:

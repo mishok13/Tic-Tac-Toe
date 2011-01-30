@@ -20,44 +20,72 @@ CROSS = 1
 DRAUGHT = -1
 
 
-class Engine(object):
+def next_mark(board):
+    """What should the next mark be"""
+    if sum(board.itervalues()):
+        return DRAUGHT
+    else:
+        return CROSS
 
-    values = {'X': 1, 'O': -1}
 
-    def __init__(self):
-        self.board = dict(((x, y), EMPTY) for x in xrange(3) for y in xrange(3))
+def current_mark(board):
+    """What was the latest mark on the board"""
+    if sum(board.itervalues()):
+        return CROSS
+    else:
+        return DRAUGHT
 
-    @property
-    def current_mark(self):
-        # We're assuming that if everything's right, then
-        # sum of all values should be 0 or 1, where
-        # 0 would mean that it's crosses move
-        # and 1 would make draughts move
-        if sum(self.board.itervalues()):
-            value = DRAUGHT
-        else:
-            value = CROSS
-        return value
 
-    def move(self):
-        """Random AI, what could be better?"""
-        self.mark(random.choice([coord for coord, value in self.board.iteritems()
-                                 if value == EMPTY]))
+def random_move(board):
+    """This is liek the most powerful AI ever"""
+    return random.choice([coord for coord, value in board.iteritems()
+                          if value == EMPTY])
 
-    def mark(self, coord):
-        """Mark the coord and check for the winning position"""
-        self.board[coord] = self.current_mark
-        check(self.board)
+
+def bruteforce(board):
+    """Going through the simple way"""
+    # Opening, just put cross into the corner
+    if sum(value == EMPTY for value in board.itervalues()) == 9:
+        return (0, 0)
+    # Opening, but from the draughts side, put draught in the center
+    if (sum(value == EMPTY for value in board.itervalues()) == 8 and
+        board[(1, 1)] == EMPTY):
+        return (1, 1)
+    # If there's a situation with two in a row, block it or win
+    for line in columns_and_diagonals(board):
+        if abs(sum(line.values())) == 2:
+            return (coord for coord, value in line.iteritems()
+                    if value == EMPTY).next()
+    # TODO: fork
+    # Play center
+    if board[(1, 1)] == EMPTY:
+        return (1, 1)
+    # TODO: opposite corner
+    # Empty corner
+    for coord in ((x, y) for x in (0, 2) for y in (0, 2)):
+        if board[(1, 1)] == EMPTY:
+            return coord
+    # There's nothing else left, just play whatever there is
+    return random_move(board)
+
+
+def columns_and_diagonals(board):
+    for x in xrange(3):
+        yield dict(((x, y), board[(x, y)]) for y in xrange(3))
+        yield dict(((y, x), board[(y, x)]) for y in xrange(3))
+    yield dict(((x, x), board[(x, x)]) for x in xrange(3))
+    yield dict(((x, 2 - x), board[(x, 2 - x)]) for x in xrange(3))
+
+
+
+def empty_board():
+    return dict(((x, y), EMPTY) for x in xrange(3) for y in xrange(3))
+
 
 def check(board):
     """Simple routine for checking if somebody has won"""
-    for x in xrange(3):
-        if (abs(sum(board[(x, y)] for y in xrange(3))) == 3 or
-            abs(sum(board[(y, x)] for y in xrange(3))) == 3):
+    for line in columns_and_diagonals(board):
+        if abs(sum(line.values())) == 3:
             raise Victory
-    # Now, check the diagonals
-    if (abs(sum(board[(x, x)] for x in xrange(3))) == 3 or
-        abs(sum(board[(x, 2 - x)] for x in xrange(3))) == 3):
-        raise Victory
     if 0 not in board.values():
         raise Draw
