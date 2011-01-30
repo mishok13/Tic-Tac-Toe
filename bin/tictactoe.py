@@ -8,11 +8,15 @@
 import argparse
 import sys
 import traceback
+from ttt import engine
 
 
 def process(args):
     try:
-        raise NotImplementedError
+        eng = engine.Engine()
+        while True:
+            eng.move()
+            print eng.board
     except Exception:
         traceback.print_exc()
         return 2
